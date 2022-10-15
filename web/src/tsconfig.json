@@ -1,0 +1,9 @@
+{
+	"compilerOptions": {
+		"module": "esnext",
+		"lib": ["DOM", "ES2021"],
+		"importsNotUsedAsValues": "error",
+		"noImplicitAny": false
+	},
+	"extends": "../../tsconfig.json"
+}
