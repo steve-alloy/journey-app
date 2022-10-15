@@ -4,9 +4,9 @@
   "description": "",
   "main": "build/index.js",
   "scripts": {
-    "build:web": "ts-node configs/web.config.ts --mode watch",
-    "build:server": "ts-node configs/server.config.ts --mode watch",
-    "build": "npm run build:web && npm run build:server",
+    "build:web": "ts-node configs/web.config.ts --mode $MODE",
+    "build:server": "ts-node configs/server.config.ts --mode $MODE",
+    "build": "npm run build:web 'nowatch' && npm run build:server 'nowatch'",
     "start": "node .",
     "dev": "nodemon ."
   },
