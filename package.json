@@ -6,6 +6,7 @@
   "scripts": {
     "build:web": "ts-node configs/web.config.ts --mode watch",
     "build:server": "ts-node configs/server.config.ts --mode watch",
+    "build": "npm run build:web && npm run build:server",
     "start": "node .",
     "dev": "nodemon ."
   },

@@ -19,7 +19,7 @@
 		"extend": validator({ schema }),
 
 		async onSubmit(values) {
-			const response = await fetch("/", {
+			const response = await fetch("/journey", {
 				"method": "POST",
 				"body": JSON.stringify(values),
 				"headers": {
@@ -108,7 +108,7 @@
 <div>
 	<Header />
 		{#if businesses.length || persons.length}
-			<form>
+			<form use:form action="/" method="post">
 
 				{#if persons.length}
 					<h3>Persons</h3>

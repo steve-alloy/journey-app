@@ -18,7 +18,7 @@ interface IJourney {
     "external_group_id": string
 };
 
-app.post("/", (req: Request, res: Response) => {
+app.post("/journey", (req: Request, res: Response) => {
     const persons = req.body.person;
     const businesses = req.body.business;
 
