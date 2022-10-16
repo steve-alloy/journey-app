@@ -108,7 +108,7 @@
 <div>
 	<Header />
 	{#if businesses.length || persons.length}
-		<form use:form action="/" method="post">
+		<form use:form>
 			{#if persons.length}
 				<h3>Persons</h3>
 				{#each persons as person (person)}
