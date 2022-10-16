@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import path from "node:path";
 import express from "express";
+import cors from "cors";
 import axios from "axios";
 import { envVars } from "./configs/env.config";
 import type { Application, Request, Response } from "express";
@@ -12,6 +13,7 @@ const publicPath = path.join(__dirname, "../build/public");
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(express.static(publicPath));
+app.use(cors);
 
 interface IJourney {
 	entities: any[];
