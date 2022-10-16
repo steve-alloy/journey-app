@@ -1,5 +1,5 @@
 import fs from "node:fs";
-import { build, PluginBuild } from "esbuild";
+import { build } from "esbuild";
 
 // Imports for bundling JS
 import esbuildSvelte from "esbuild-svelte";
@@ -11,6 +11,8 @@ import stylePlugin from "esbuild-style-plugin";
 import postcssPresetEnv from "postcss-preset-env";
 import purgecss from "@fullhuman/postcss-purgecss";
 import stylelint from "stylelint";
+
+import type { PluginBuild } from "esbuild";
 
 // Simple HTML bundler
 const esbuildHTML = {

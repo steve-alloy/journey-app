@@ -10,6 +10,6 @@ build({
 	treeShaking: true,
 	outfile: "./build/index.js",
 	sourcemap: false,
-    watch: watch,
+	watch: watch,
 	platform: "node"
 }).catch(() => process.exit(1));

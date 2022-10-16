@@ -1,14 +1,17 @@
 {
   "name": "journey-app",
   "version": "1.0.0",
-  "description": "",
+  "description": "Alloy Journey Test App",
   "main": "build/index.js",
   "scripts": {
     "build:web": "ts-node configs/web.config.ts --mode $MODE",
     "build:server": "ts-node configs/server.config.ts --mode $MODE",
     "build": "npm run build:web 'nowatch' && npm run build:server 'nowatch'",
     "start": "node .",
-    "dev": "nodemon ."
+    "dev": "nodemon .",
+    "lint": "eslint . --ext .ts,.svelte --fix",
+    "format": "prettier --write './**'",
+    "clean": "npm run lint && npm run format"
   },
   "repository": {
     "type": "git",
@@ -37,25 +40,103 @@
     "node": "^18.10.0",
     "node-fetch": "^3.2.10",
     "postcss-preset-env": "^7.8.2",
-    "stylelint": "^14.13.0",
+    "stylelint": "^14.14.0",
     "svelte": "^3.50.1",
     "svelte-preprocess": "^4.10.7",
     "yup": "^0.32.11"
   },
   "devDependencies": {
+    "@playwright/test": "^1.27.1",
     "@tsconfig/svelte": "^3.0.0",
     "@types/chai": "^4.3.3",
     "@types/express": "^4.17.14",
     "@types/mocha": "^10.0.0",
     "@types/node": "^18.8.3",
     "@types/postcss-preset-env": "^7.7.0",
+    "@typescript-eslint/eslint-plugin": "^5.40.0",
+    "@typescript-eslint/parser": "^5.40.0",
     "eslint": "^8.25.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-svelte3": "^4.0.0",
     "nodemon": "^2.0.20",
+    "playwright": "^1.27.1",
     "prettier": "^2.7.1",
-    "prettier-plugin-svelte": "^2.7.1",
+    "prettier-plugin-svelte": "^2.8.0",
     "ts-node": "^10.9.1",
     "typescript": "^4.8.4"
+  },
+  "eslintConfig": {
+    "env": {
+      "browser": true,
+      "es2021": true,
+      "node": true
+    },
+    "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/recommended",
+      "prettier"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+      "ecmaVersion": "latest",
+      "sourceType": "module"
+    },
+    "plugins": [
+      "@typescript-eslint",
+      "svelte3"
+    ],
+    "overrides": [
+      {
+        "files": [
+          "*.svelte"
+        ],
+        "processor": "svelte3/svelte3"
+      }
+    ],
+    "settings": {
+      "svelte3/typescript": true
+    },
+    "ignorePatterns": [
+      "*.html",
+      "*.md",
+      "*.css",
+      "*.json",
+      "*.js.map",
+      "node_modules",
+      "sandbox/",
+      "build/",
+      "styles/",
+      "images/"
+    ],
+    "rules": {
+      "@typescript-eslint/no-var-requires": "off",
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-unused-vars": "off",
+      "no-undef": "off",
+      "linebreak-style": [
+        "error",
+        "unix"
+      ],
+      "quotes": [
+        "error",
+        "double"
+      ],
+      "semi": [
+        "error",
+        "always"
+      ],
+      "no-unused-vars": 0
+    }
+  },
+  "prettier": {
+    "trailingComma": "none",
+    "tabWidth": 2,
+    "semi": true,
+    "singleQuote": false,
+    "quoteProps": "consistent",
+    "bracketSpacing": true,
+    "bracketSameLine": true,
+    "arrowParens": "always",
+    "useTabs": true
   }
 }

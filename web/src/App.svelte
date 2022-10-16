@@ -4,25 +4,25 @@
 	import PersonForm from "./components/PersonForm.svelte";
 
 	import * as yup from "yup";
-    import { createForm } from "felte";
-    import { validator } from "@felte/validator-yup";
-    import alloy from "@alloyidentity/web-sdk";
+	import { createForm } from "felte";
+	import { validator } from "@felte/validator-yup";
+	import alloy from "@alloyidentity/web-sdk";
 
-    const schema = yup.object({
-		"business_name": yup.string().min(2).max(50),
-        "business_address_country_code": yup.string().min(2).max(2),
-		"name_first": yup.string().min(2).max(25),
-		"email": yup.string().email()
+	const schema = yup.object({
+		business_name: yup.string().min(2).max(50),
+		business_address_country_code: yup.string().min(2).max(2),
+		name_first: yup.string().min(2).max(25),
+		email: yup.string().email()
 	});
 
 	const { form } = createForm({
-		"extend": validator({ schema }),
+		extend: validator({ schema }),
 
 		async onSubmit(values) {
 			const response = await fetch("/journey", {
-				"method": "POST",
-				"body": JSON.stringify(values),
-				"headers": {
+				method: "POST",
+				body: JSON.stringify(values),
+				headers: {
 					"content-type": "application/json"
 				}
 			});
@@ -34,14 +34,16 @@
 			const alloyInitParams = {
 				key: "55926f62-901b-4fe1-a48d-15b3c518b9aa",
 				production: false,
-				color: { primary: '#CD7D2D', secondary: '#862633' },
+				color: { primary: "#CD7D2D", secondary: "#862633" },
 				journeyApplicationToken: journeyData.journeyApplicationToken,
 				journeyToken: journeyData.journeyToken,
 				isNext: true,
 				isSingleEntity: false
 			};
 
-			const totalPendingDocs = journeyData.entityApplications.filter((app: any) => app.entity_application_status === "pending_documents");
+			const totalPendingDocs = journeyData.entityApplications.filter(
+				(app: any) => app.entity_application_status === "pending_documents"
+			);
 
 			const runDocV = () => {
 				alloy.init(alloyInitParams);
@@ -76,9 +78,9 @@
 		console.log(id);
 
 		if (type === "business") {
-			businesses = businesses.filter(business => business !== id);
+			businesses = businesses.filter((business) => business !== id);
 		} else {
-			persons = persons.filter(person => person !== id);
+			persons = persons.filter((person) => person !== id);
 		}
 	};
 
@@ -87,64 +89,70 @@
 
 	let businesses: string[] = [];
 	let persons: string[] = [];
-	
-	$: console.log(businesses);
-	$: console.log(persons);
+
+	$: console.log("Total Entities:", businessCount + personCount);
 
 	const addEntity = (type: string) => {
 		if (type === "person") {
 			const newPerson = "person." + personCount;
-			persons = [...persons,  newPerson];
+			persons = [...persons, newPerson];
 			personCount++;
 		} else {
 			const newBusiness = "business." + businessCount;
-			businesses = [...businesses,  newBusiness];
+			businesses = [...businesses, newBusiness];
 			businessCount++;
 		}
 	};
-
 </script>
 
 <div>
 	<Header />
-		{#if businesses.length || persons.length}
-			<form use:form action="/" method="post">
+	{#if businesses.length || persons.length}
+		<form use:form action="/" method="post">
+			{#if persons.length}
+				<h3>Persons</h3>
+				{#each persons as person (person)}
+					<PersonForm personId={person} on:id={deleteEntity} />
+				{/each}
+			{/if}
 
-				{#if persons.length}
-					<h3>Persons</h3>
-					{#each persons as person (person)}
-						<PersonForm personId={person} on:id={deleteEntity}/>
-					{/each}
-				{/if}
+			{#if businesses.length}
+				<h3>Businesses</h3>
+				{#each businesses as business (business)}
+					<BusinessForm businessId={business} on:id={deleteEntity} />
+				{/each}
+			{/if}
 
-				{#if businesses.length}
-					<h3>Businesses</h3>
-					{#each businesses as business (business)}
-						<BusinessForm businessId={business} on:id={deleteEntity}/>
-					{/each}
-				{/if}
+			<button id="submit">Submit</button>
+		</form>
+	{/if}
 
-				<button id="submit">Submit</button>
-			</form>
-		{/if}
+	<button
+		id="add-person"
+		on:click={() => {
+			addEntity("person");
+		}}>Add Person</button>
+	<button
+		id="add-business"
+		on:click={() => {
+			addEntity("business");
+		}}>Add Business</button>
 
-	<button id="add-person" on:click={() => {addEntity("person")}}>Add Person</button>
-	<button id="add-business" on:click={() => {addEntity("business")}}>Add Business</button>
-		
 	<div id="continue-form">
-		<input type="radio" id="finish"
-		name="continue" value="finish" checked>
-	   <label for="finish">Finish</label>
- 
-	   <input type="radio" id="addl-entities"
-		name="continue" value="addl-entities">
-	   <label for="addl-entities">Await Entities</label>
-	</div>
+		<input type="radio" id="finish" name="continue" value="finish" checked />
+		<label for="finish">Finish</label>
 
+		<input
+			type="radio"
+			id="addl-entities"
+			name="continue"
+			value="addl-entities" />
+		<label for="addl-entities">Await Entities</label>
+	</div>
 </div>
 
 <style>
-		input {
-			display: inline;
-		}
+	input {
+		display: inline;
+	}
 </style>
