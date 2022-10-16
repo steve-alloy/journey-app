@@ -13,7 +13,9 @@ const publicPath = path.join(__dirname, "../build/public");
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(express.static(publicPath));
-app.use(cors);
+app.use(cors({
+	"origin": ["http://localhost/", "https://journey-alloy.herokuapp.com/"]
+}));
 
 interface IJourney {
 	entities: any[];
@@ -21,7 +23,14 @@ interface IJourney {
 	external_group_id: string;
 }
 
+app.post("/healthcheck", (req: Request, res: Response) => {
+	return res.json({
+		"ok": true
+	});
+});
+
 app.post("/journey", (req: Request, res: Response) => {
+	console.log("ALLOY REQUEST", req.body);
 	const persons = req.body.person;
 	const businesses = req.body.business;
 
