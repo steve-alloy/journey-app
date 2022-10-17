@@ -8,7 +8,6 @@
 	import { createForm } from "felte";
 	import { validator } from "@felte/validator-yup";
 	import alloy from "@alloyidentity/web-sdk";
-  import e from "express";
 
 	let businesses: string[] = [];
 	let persons: string[] = [];
