@@ -153,7 +153,7 @@
 	
 	{:else}
 		{#await getAppStatus(formValues)}
-			<h2>Determing application status...</h2>
+			<h2>Determining application status...</h2>
 		{:then status}
 			<h2>Your application status: {status}</h2>
 		{/await}
