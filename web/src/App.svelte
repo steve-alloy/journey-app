@@ -8,6 +8,7 @@
 	import { createForm } from "felte";
 	import { validator } from "@felte/validator-yup";
 	import alloy from "@alloyidentity/web-sdk";
+  import e from "express";
 
 	let businesses: string[] = [];
 	let persons: string[] = [];
@@ -115,47 +116,48 @@
 <div>
 	<Header />
 
-	<AddButton type="person" on:count={addEntity} />
-	<AddButton type="business" on:count={addEntity} />
+	{#if !formValues}
+		<AddButton type="person" on:count={addEntity} />
+		<AddButton type="business" on:count={addEntity} />
 
-	{#if formValues}
+		<div id="continue-form">
+			<input type="radio" id="finish" name="continue" value="finish" checked />
+			<label for="finish">Finish</label>
+
+			<input
+				type="radio"
+				id="addl-entities"
+				name="continue"
+				value="addl-entities" />
+			<label for="addl-entities">Await Entities</label>
+		</div>
+
+		{#if (businesses.length || persons.length) && !formValues}
+			<form use:form>
+				{#if persons.length}
+					<h3>Persons</h3>
+					{#each persons as person (person)}
+						<PersonForm personId={person} on:id={deleteEntity} />
+					{/each}
+				{/if}
+
+				{#if businesses.length}
+					<h3>Businesses</h3>
+					{#each businesses as business (business)}
+						<BusinessForm businessId={business} on:id={deleteEntity} />
+					{/each}
+				{/if}
+
+				<button id="submit-button">Submit</button>
+			</form>
+		{/if}
+	
+	{:else}
 		{#await getAppStatus(formValues)}
-			<h2>Waiting...</h2>
+			<h2>Determing application status...</h2>
 		{:then status}
 			<h2>Your application status: {status}</h2>
 		{/await}
-	{/if}
-
-	<div id="continue-form">
-		<input type="radio" id="finish" name="continue" value="finish" checked />
-		<label for="finish">Finish</label>
-
-		<input
-			type="radio"
-			id="addl-entities"
-			name="continue"
-			value="addl-entities" />
-		<label for="addl-entities">Await Entities</label>
-	</div>
-
-	{#if (businesses.length || persons.length) && !formValues}
-		<form use:form>
-			{#if persons.length}
-				<h3>Persons</h3>
-				{#each persons as person (person)}
-					<PersonForm personId={person} on:id={deleteEntity} />
-				{/each}
-			{/if}
-
-			{#if businesses.length}
-				<h3>Businesses</h3>
-				{#each businesses as business (business)}
-					<BusinessForm businessId={business} on:id={deleteEntity} />
-				{/each}
-			{/if}
-
-			<button id="submit-button">Submit</button>
-		</form>
 	{/if}
 </div>
 
