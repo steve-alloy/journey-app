@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createEventDispatcher } from "svelte";
 	export let personId: string;
-	
+
 	let email = "";
 	let nameFirst = "";
 	let nameLast = "";
@@ -14,8 +14,6 @@
 			"type": "person"
 		});
 	};
-
-
 </script>
 
 <div class="entity-form person-form" id={personId}>
@@ -40,7 +38,8 @@
 		name="{personId}.name_last"
 		type="text" />
 
-	<img class="delete-icon"
+	<img
+		class="delete-icon"
 		src="./assets/delete.png"
 		on:click={() => dispatchId(personId)}
 		alt="delete person" />

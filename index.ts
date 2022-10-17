@@ -92,6 +92,7 @@ app.post("/journey", (req: Request, res: Response) => {
 		return res.json({
 			"ok": true,
 			"data": {
+				"journeyApplicationStatus": data.journey_application_status,
 				"entityApplications": data._embedded.entity_applications,
 				"journeyApplicationToken": data.journey_application_token,
 				"journeyToken": journeysToken

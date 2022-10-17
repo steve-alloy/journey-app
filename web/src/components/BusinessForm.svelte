@@ -17,18 +17,18 @@
 
 <div class="entity-form business-form" id={businessId}>
 	<label for="{businessId}.business_name">Business Name:</label>
-	<input 
+	<input
 		bind:value={businessName}
 		placeholder="Alloy"
-		name="{businessId}.business_name" 
+		name="{businessId}.business_name"
 		type="name" />
 
 	<label for="{businessId}.business_address_country_code"
 		>Business County Code:</label>
-	<input 
+	<input
 		bind:value={businessCountryCode}
 		placeholder="US"
-		name="{businessId}.business_address_country_code" 
+		name="{businessId}.business_address_country_code"
 		type="text" />
 
 	<img
