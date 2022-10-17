@@ -72,47 +72,6 @@
 
 		async onSubmit(values) {
 			formValues = values;
-			const response = await fetch("/journey", {
-				"method": "POST",
-				"body": JSON.stringify(values),
-				"headers": {
-					"content-type": "application/json"
-				}
-			});
-
-			const data = await response.json();
-			const journeyData = data.data;
-			console.log(data);
-
-			const alloyInitParams = {
-				"key": "55926f62-901b-4fe1-a48d-15b3c518b9aa",
-				"production": false,
-				"color": { "primary": "#CD7D2D", "secondary": "#862633" },
-				"journeyApplicationToken": journeyData.journeyApplicationToken,
-				"journeyToken": journeyData.journeyToken,
-				"isNext": true,
-				"isSingleEntity": false
-			};
-
-			const totalPendingDocs = journeyData.entityApplications.filter(
-				(app: any) => app.entity_application_status === "pending_documents"
-			);
-
-			const runDocV = () => {
-				alloy.init(alloyInitParams);
-
-				const respCallback = () => {
-					alloy.close();
-				};
-
-				const sdkAnchor = document.getElementById("sdk-anchor");
-
-				alloy.open(respCallback, sdkAnchor);
-			};
-
-			if (totalPendingDocs.length) {
-				runDocV();
-			}
 		},
 
 		onSuccess() {
@@ -162,8 +121,8 @@
 	{#if formValues}
 		{#await getAppStatus(formValues)}
 			<h2>Waiting...</h2>
-		{:then data}
-			<h2>Your application status: {data}</h2>
+		{:then status}
+			<h2>Your application status: {status}</h2>
 		{/await}
 	{/if}
 
