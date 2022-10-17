@@ -2,7 +2,6 @@ import { randomUUID } from "node:crypto";
 import path from "node:path";
 import express from "express";
 import cors from "cors";
-import axios from "axios";
 import { envVars } from "./configs/env.config";
 import type { Application, Request, Response } from "express";
 
@@ -10,12 +9,14 @@ const port = envVars.port;
 const app: Application = express();
 const publicPath = path.join(__dirname, "../build/public");
 
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ "extended": false }));
 app.use(express.json());
 app.use(express.static(publicPath));
-app.use(cors({
-	"origin": ["http://localhost/", "https://journey-alloy.herokuapp.com/"]
-}));
+app.use(
+	cors({
+		"origin": ["http://localhost/", "https://journey-alloy.herokuapp.com/"]
+	})
+);
 
 interface IJourney {
 	entities: any[];
@@ -36,9 +37,9 @@ app.post("/journey", (req: Request, res: Response) => {
 
 	const journeysToken = envVars.journeysToken;
 	const journeysObj: IJourney = {
-		entities: [],
-		external_product_id: "P-" + randomUUID(),
-		external_group_id: "G-" + randomUUID()
+		"entities": [],
+		"external_product_id": "P-" + randomUUID(),
+		"external_group_id": "G-" + randomUUID()
 	};
 
 	const authToken = Buffer.from(
@@ -49,10 +50,10 @@ app.post("/journey", (req: Request, res: Response) => {
 	if (persons && persons.length) {
 		persons.forEach((person: any) => {
 			const personObj = {
-				data: person,
-				external_entity_id: "I-" + randomUUID(),
-				entity_type: "person",
-				branch_name: "persons"
+				"data": person,
+				"external_entity_id": "I-" + randomUUID(),
+				"entity_type": "person",
+				"branch_name": "persons"
 			};
 
 			journeysObj.entities.push(personObj);
@@ -62,10 +63,10 @@ app.post("/journey", (req: Request, res: Response) => {
 	if (businesses && businesses.length) {
 		businesses.forEach((business: any) => {
 			const businessObj = {
-				data: business,
-				external_entity_id: "B-" + randomUUID(),
-				entity_type: "business",
-				branch_name: "business"
+				"data": business,
+				"external_entity_id": "B-" + randomUUID(),
+				"entity_type": "business",
+				"branch_name": "business"
 			};
 
 			journeysObj.entities.push(businessObj);
@@ -73,23 +74,27 @@ app.post("/journey", (req: Request, res: Response) => {
 	}
 
 	const submitApplication = async () => {
-		const response = await axios({
-			method: "POST",
-			url: `https://sandbox.alloy.co/v1/journeys/${journeysToken}/applications`,
-			headers: {
-				Authorization: `Basic ${authToken}`
-			},
-			data: journeysObj
-		});
+		const response = await fetch(
+			`https://sandbox.alloy.co/v1/journeys/${journeysToken}/applications`,
+			{
+				"method": "POST",
+				"headers": {
+					"Authorization": `Basic ${authToken}`
+				},
+				"body": JSON.stringify(journeysObj)
+			}
+		);
 
-		console.log("Alloy Response:", response.data);
+		const data = await response.json();
+
+		console.log("Alloy Response:", data);
 
 		return res.json({
-			ok: true,
-			data: {
-				entityApplications: response.data._embedded.entity_applications,
-				journeyApplicationToken: response.data.journey_application_token,
-				journeyToken: journeysToken
+			"ok": true,
+			"data": {
+				"entityApplications": data._embedded.entity_applications,
+				"journeyApplicationToken": data.journey_application_token,
+				"journeyToken": journeysToken
 			}
 		});
 	};

@@ -1,28 +1,33 @@
 <script lang="ts">
 	import Header from "./components/Header.svelte";
+	import AddButton from "./components/AddButton.svelte";
 	import BusinessForm from "./components/BusinessForm.svelte";
 	import PersonForm from "./components/PersonForm.svelte";
-
+	import { personCount, businessCount } from "./stores";
 	import * as yup from "yup";
 	import { createForm } from "felte";
 	import { validator } from "@felte/validator-yup";
 	import alloy from "@alloyidentity/web-sdk";
 
+	let businesses: string[] = [];
+	let persons: string[] = [];
+
 	const schema = yup.object({
-		business_name: yup.string().min(2).max(50),
-		business_address_country_code: yup.string().min(2).max(2),
-		name_first: yup.string().min(2).max(25),
-		email: yup.string().email()
+		"business_name": yup.string().min(2).max(50),
+		"business_address_country_code": yup.string().min(2).max(2),
+		"name_first": yup.string().min(2).max(25),
+		"email": yup.string().email()
 	});
 
+	// Note: Add validation for empty values
 	const { form } = createForm({
-		extend: validator({ schema }),
+		"extend": validator({ schema }),
 
 		async onSubmit(values) {
 			const response = await fetch("/journey", {
-				method: "POST",
-				body: JSON.stringify(values),
-				headers: {
+				"method": "POST",
+				"body": JSON.stringify(values),
+				"headers": {
 					"content-type": "application/json"
 				}
 			});
@@ -32,13 +37,13 @@
 			console.log(data);
 
 			const alloyInitParams = {
-				key: "55926f62-901b-4fe1-a48d-15b3c518b9aa",
-				production: false,
-				color: { primary: "#CD7D2D", secondary: "#862633" },
-				journeyApplicationToken: journeyData.journeyApplicationToken,
-				journeyToken: journeyData.journeyToken,
-				isNext: true,
-				isSingleEntity: false
+				"key": "55926f62-901b-4fe1-a48d-15b3c518b9aa",
+				"production": false,
+				"color": { "primary": "#CD7D2D", "secondary": "#862633" },
+				"journeyApplicationToken": journeyData.journeyApplicationToken,
+				"journeyToken": journeyData.journeyToken,
+				"isNext": true,
+				"isSingleEntity": false
 			};
 
 			const totalPendingDocs = journeyData.entityApplications.filter(
@@ -75,38 +80,49 @@
 		const type = event.detail.type;
 		const id = event.detail.id;
 
-		console.log(id);
-
-		if (type === "business") {
-			businesses = businesses.filter((business) => business !== id);
-		} else {
-			persons = persons.filter((person) => person !== id);
-		}
-	};
-
-	let businessCount = 0;
-	let personCount = 0;
-
-	let businesses: string[] = [];
-	let persons: string[] = [];
-
-	$: console.log("Total Entities:", businessCount + personCount);
-
-	const addEntity = (type: string) => {
 		if (type === "person") {
-			const newPerson = "person." + personCount;
-			persons = [...persons, newPerson];
-			personCount++;
+			persons = persons.filter((person) => person !== id);
+			$personCount--;
 		} else {
-			const newBusiness = "business." + businessCount;
-			businesses = [...businesses, newBusiness];
-			businessCount++;
+			businesses = businesses.filter((business) => business !== id);
+			$businessCount--;
 		}
 	};
+
+	const addEntity = (event: any) => {
+		const type = event.detail.type;
+		if (type === "person") {
+			const newPerson = "person." + $personCount;
+			persons = [...persons, newPerson];
+			$personCount++;
+		} else {
+			const newBusiness = "business." + $businessCount;
+			businesses = [...businesses, newBusiness];
+			$businessCount++;
+		}
+	};
+
+	$: console.log("Total Entities:", $businessCount + $personCount);
 </script>
 
 <div>
 	<Header />
+
+	<AddButton type="person" on:count={addEntity}/>
+	<AddButton type="business" on:count={addEntity}/>
+
+	<div id="continue-form">
+		<input type="radio" id="finish" name="continue" value="finish" checked />
+		<label for="finish">Finish</label>
+
+		<input
+			type="radio"
+			id="addl-entities"
+			name="continue"
+			value="addl-entities" />
+		<label for="addl-entities">Await Entities</label>
+	</div>
+
 	{#if businesses.length || persons.length}
 		<form use:form>
 			{#if persons.length}
@@ -123,32 +139,10 @@
 				{/each}
 			{/if}
 
-			<button id="submit">Submit</button>
+			<button id="submit-button">Submit</button>
 		</form>
 	{/if}
 
-	<button
-		id="add-person"
-		on:click={() => {
-			addEntity("person");
-		}}>Add Person</button>
-	<button
-		id="add-business"
-		on:click={() => {
-			addEntity("business");
-		}}>Add Business</button>
-
-	<div id="continue-form">
-		<input type="radio" id="finish" name="continue" value="finish" checked />
-		<label for="finish">Finish</label>
-
-		<input
-			type="radio"
-			id="addl-entities"
-			name="continue"
-			value="addl-entities" />
-		<label for="addl-entities">Await Entities</label>
-	</div>
 </div>
 
 <style>

@@ -14,9 +14,9 @@ import stylelint from "stylelint";
 
 import type { PluginBuild } from "esbuild";
 
-// Simple HTML bundler
+// HTML bundler
 const esbuildHTML = {
-	name: "esbuild-html",
+	"name": "esbuild-html",
 	setup(build: PluginBuild) {
 		build.onStart(() => {
 			if (!fs.existsSync("./build/public/index.html")) {
@@ -30,39 +30,64 @@ const esbuildHTML = {
 	}
 };
 
+// Image bundler
+const esbuildImages = {
+	"name": "esbuild-html",
+	setup(build: PluginBuild) {
+		build.onStart(() => {
+			if (!fs.existsSync("./build/public/assets")) {
+				fs.mkdirSync("./build/public/assets");
+			}
+
+			fs.readdir("./web/public/images", (err, files) => {
+				if (err) {
+					return console.log(err);
+				}
+
+				files.forEach((file) => {
+					fs.copyFileSync(
+						`./web/public/images/${file}`,
+						`./build/public/assets/${file}`
+					);
+				});
+			});
+		});
+	}
+};
+
 const watch = process.argv.includes("watch");
 
 // Build client
 build({
-	entryPoints: ["./web/src/main.ts"],
-	bundle: true,
-	tsconfig: "./web/src/tsconfig.json",
-	minify: true,
-	treeShaking: true,
-	outfile: "./build/public/assets/bundle.js",
-	define: {
+	"entryPoints": ["./web/src/main.ts"],
+	"bundle": true,
+	"tsconfig": "./web/src/tsconfig.json",
+	"minify": true,
+	"treeShaking": true,
+	"outfile": "./build/public/assets/bundle.js",
+	"define": {
 		"process.env.CODELESS_SDK_APP_URL": "'https://alloysdk.alloy.co/'"
 	},
-	watch: watch,
-	sourcemap: true,
-	platform: "browser",
-	plugins: [
+	"watch": watch,
+	"sourcemap": true,
+	"platform": "browser",
+	"plugins": [
 		stylePlugin({
-			postcss: {
-				plugins: [
+			"postcss": {
+				"plugins": [
 					autoprefixer,
 					postcssPresetEnv({
-						stage: 1
+						"stage": 1
 					}),
 					purgecss({
-						content: [
+						"content": [
 							"./web/public/index.html",
 							"./web/src/App.svelte",
 							"./web/src/**/*.svelte"
 						]
 					}),
 					stylelint({
-						rules: {
+						"rules": {
 							"color-no-invalid-hex": true
 						}
 					})
@@ -70,8 +95,9 @@ build({
 			}
 		}),
 		esbuildSvelte({
-			preprocess: sveltePreprocess()
+			"preprocess": sveltePreprocess()
 		}),
-		esbuildHTML
+		esbuildHTML,
+		esbuildImages
 	]
 }).catch(() => process.exit(1));
